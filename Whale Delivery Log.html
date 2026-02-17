@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)https://whalev2-444.pages.dev/ -->
+<html lang="zh-HK"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Whale Delivery Log</title>
+  <meta name="theme-color" content="#0b3d91">
+  <link rel="manifest" href="https://whalev2-444.pages.dev/manifest.json">
+  <link rel="icon" href="https://whalev2-444.pages.dev/icons/icon-192.png">
+  <link rel="stylesheet" href="./Whale Delivery Log_files/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">🐋</div>
+      <div class="titles">
+        <div class="appname">Whale Delivery Log</div>
+        <div class="subtitle">星期二／五動態收送 + 6點截單輸出WhatsApp文字</div>
+      </div>
+    </div>
+    <div class="actions">
+      <span id="cloudStatus" class="cloud-status" title="雲端同步狀態">☁️ 離線</span>
+      <button id="btnCloudPull" class="btn ghost" title="從雲端拉取最新資料">☁️ 拉取</button>
+      <button id="btnCloudPush" class="btn ghost" title="上傳本機資料到雲端（第一次請用呢個）">☁️ 上雲</button>
+      <button id="btnInstall" class="btn ghost" hidden="">安裝到主畫面</button>
+      <button id="btnExport" class="btn">📦 產生最終單</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="row">
+        <div class="field">
+          <label>日期</label>
+          <input id="date" type="date">
+        </div>
+        <div class="field">
+          <label>星期</label>
+          <select id="dow">
+            <option value="Tue">星期二</option>
+            <option value="Fri">星期五</option>
+            <option value="Other">其他</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>截單時間</label>
+          <input id="cutoff" type="time" value="18:00">
+        </div>
+        <div class="field grow">
+          <label>備註（例如：以最後版本為準）</label>
+          <input id="headerNote" type="text" value="（以最後版本為準）">
+        </div>
+      </div>
+
+      <div class="legend">
+        <span class="pill">✏️ 改過</span>
+        <span class="pill">🔄 更新</span>
+        <span class="pill red">🔴 10點後／一定要留意</span>
+        <span class="pill green">✔ 已完成</span>
+        <span class="pill gray">❌ 取消</span>
+        <span class="pill yellow">🟨 未定／之後</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <section class="card">
+        <div class="cardhead">
+          <h2>🚚 送</h2>
+          <button class="btn small" data-add="deliver">＋加一單</button>
+        </div>
+        <div id="listDeliver" class="list"><div class="item">
+      <div class="itemtop">
+        <div class="left">
+          <label class="check">
+            <input type="checkbox" class="done">
+            <span class="box"></span>
+          </label>
+          <input class="title" type="text" placeholder="例：Gelato Pique Cafe｜Airside 3/F / A3507 / C2502">
+          <div class="custPick">
+            <select class="custSelect" title="選擇常用客戶"><option value="">（選擇常用客戶）</option><option value="r3zt9sfs">test</option><option value="qysw34jc">林小姐</option><option value="ptn7tb94">AA</option><option value="qw01wk8g">A3507</option><option value="g9s5w804">A2801</option><option value="vtsao9rf">常悦李小姐</option><option value="red7l9ed">東浦</option><option value="43rrl3v9">C2502</option><option value="daj8swsa">D2208</option><option value="aqyk0skq" selected="">Gelato Pique Cafe</option><option value="70tay536">D3207</option><option value="zft3t489">華懋 Miki</option><option value="qr64uny1">六合街嘉時</option><option value="mwkwt9ev">松池</option><option value="q6a06ons">泰力</option></select>
+            <button class="btn tiny applyCust" type="button" title="套用客戶預設資料到此單">套用</button>
+          </div>
+
+        </div>
+        <div class="right">
+          <button class="tag red late" title="10點後／一定要留意">🔴</button>
+          <button class="tag yellow pendingTag" title="未定／之後" hidden="">🟨</button>
+          <button class="tag gray cancel" title="取消">❌</button>
+          <button class="tag" title="刪除">🗑️</button>
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>地址</label>
+          <input class="addr" type="text" placeholder="地址（可留空）">
+        </div>
+        <div class="field">
+          <label>電話</label>
+          <input class="phone" type="text" placeholder="例如：97208585">
+        </div>
+        <div class="field">
+          <label>時間</label>
+          <input class="time" type="text" placeholder="例如：6-8 / 8:30pm / 10點後">
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>備註</label>
+          <input class="note" type="text" placeholder="例如：管理處｜入袋｜密碼｜要影相｜加化油｜運費+$50 ...">
+        </div>
+        <div class="field">
+          <label>金額</label>
+          <input class="amt" type="text" placeholder="$120 / $5/機">
+        </div>
+        <div class="field">
+          <label>付款</label>
+          <select class="pay">
+            <option value="">未填</option>
+            <option value="✔ paid">✔ paid</option>
+            <option value="✔ alipay">✔ alipay</option>
+            <option value="✔ fps">✔ fps</option>
+            <option value="✔ ed">✔ ed</option>
+          </select>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="metaBadge edited">✏️</span>
+        <span class="metaBadge updated show">🔄</span>
+      </div>
+    </div><div class="item">
+      <div class="itemtop">
+        <div class="left">
+          <label class="check">
+            <input type="checkbox" class="done">
+            <span class="box"></span>
+          </label>
+          <input class="title" type="text" placeholder="例：Gelato Pique Cafe｜Airside 3/F / A3507 / C2502">
+          <div class="custPick">
+            <select class="custSelect" title="選擇常用客戶"><option value="">（選擇常用客戶）</option><option value="r3zt9sfs">test</option><option value="qysw34jc">林小姐</option><option value="ptn7tb94">AA</option><option value="qw01wk8g">A3507</option><option value="g9s5w804">A2801</option><option value="vtsao9rf">常悦李小姐</option><option value="red7l9ed">東浦</option><option value="43rrl3v9">C2502</option><option value="daj8swsa">D2208</option><option value="aqyk0skq" selected="">Gelato Pique Cafe</option><option value="70tay536">D3207</option><option value="zft3t489">華懋 Miki</option><option value="qr64uny1">六合街嘉時</option><option value="mwkwt9ev">松池</option><option value="q6a06ons">泰力</option></select>
+            <button class="btn tiny applyCust" type="button" title="套用客戶預設資料到此單">套用</button>
+          </div>
+
+        </div>
+        <div class="right">
+          <button class="tag red late" title="10點後／一定要留意">🔴</button>
+          <button class="tag yellow pendingTag" title="未定／之後" hidden="">🟨</button>
+          <button class="tag gray cancel" title="取消">❌</button>
+          <button class="tag" title="刪除">🗑️</button>
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>地址</label>
+          <input class="addr" type="text" placeholder="地址（可留空）">
+        </div>
+        <div class="field">
+          <label>電話</label>
+          <input class="phone" type="text" placeholder="例如：97208585">
+        </div>
+        <div class="field">
+          <label>時間</label>
+          <input class="time" type="text" placeholder="例如：6-8 / 8:30pm / 10點後">
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>備註</label>
+          <input class="note" type="text" placeholder="例如：管理處｜入袋｜密碼｜要影相｜加化油｜運費+$50 ...">
+        </div>
+        <div class="field">
+          <label>金額</label>
+          <input class="amt" type="text" placeholder="$120 / $5/機">
+        </div>
+        <div class="field">
+          <label>付款</label>
+          <select class="pay">
+            <option value="">未填</option>
+            <option value="✔ paid">✔ paid</option>
+            <option value="✔ alipay">✔ alipay</option>
+            <option value="✔ fps">✔ fps</option>
+            <option value="✔ ed">✔ ed</option>
+          </select>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="metaBadge edited">✏️</span>
+        <span class="metaBadge updated show">🔄</span>
+      </div>
+    </div></div>
+      </section>
+
+      <section class="card">
+        <div class="cardhead">
+          <h2>📥 收</h2>
+          <button class="btn small" data-add="pickup">＋加一單</button>
+        </div>
+        <div id="listPickup" class="list"><div class="item">
+      <div class="itemtop">
+        <div class="left">
+          <label class="check">
+            <input type="checkbox" class="done">
+            <span class="box"></span>
+          </label>
+          <input class="title" type="text" placeholder="例：Gelato Pique Cafe｜Airside 3/F / A3507 / C2502">
+          <div class="custPick">
+            <select class="custSelect" title="選擇常用客戶"><option value="">（選擇常用客戶）</option><option value="r3zt9sfs">test</option><option value="qysw34jc">林小姐</option><option value="ptn7tb94">AA</option><option value="qw01wk8g">A3507</option><option value="g9s5w804">A2801</option><option value="vtsao9rf">常悦李小姐</option><option value="red7l9ed">東浦</option><option value="43rrl3v9">C2502</option><option value="daj8swsa">D2208</option><option value="aqyk0skq" selected="">Gelato Pique Cafe</option><option value="70tay536">D3207</option><option value="zft3t489">華懋 Miki</option><option value="qr64uny1">六合街嘉時</option><option value="mwkwt9ev">松池</option><option value="q6a06ons">泰力</option></select>
+            <button class="btn tiny applyCust" type="button" title="套用客戶預設資料到此單">套用</button>
+          </div>
+
+        </div>
+        <div class="right">
+          <button class="tag red late" title="10點後／一定要留意">🔴</button>
+          <button class="tag yellow pendingTag" title="未定／之後" hidden="">🟨</button>
+          <button class="tag gray cancel" title="取消">❌</button>
+          <button class="tag" title="刪除">🗑️</button>
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>地址</label>
+          <input class="addr" type="text" placeholder="地址（可留空）">
+        </div>
+        <div class="field">
+          <label>電話</label>
+          <input class="phone" type="text" placeholder="例如：97208585">
+        </div>
+        <div class="field">
+          <label>時間</label>
+          <input class="time" type="text" placeholder="例如：6-8 / 8:30pm / 10點後">
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>備註</label>
+          <input class="note" type="text" placeholder="例如：管理處｜入袋｜密碼｜要影相｜加化油｜運費+$50 ...">
+        </div>
+        <div class="field">
+          <label>金額</label>
+          <input class="amt" type="text" placeholder="$120 / $5/機">
+        </div>
+        <div class="field">
+          <label>付款</label>
+          <select class="pay">
+            <option value="">未填</option>
+            <option value="✔ paid">✔ paid</option>
+            <option value="✔ alipay">✔ alipay</option>
+            <option value="✔ fps">✔ fps</option>
+            <option value="✔ ed">✔ ed</option>
+          </select>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="metaBadge edited">✏️</span>
+        <span class="metaBadge updated show">🔄</span>
+      </div>
+    </div></div>
+      </section>
+
+      <section class="card">
+        <div class="cardhead">
+          <h2>🟨 未定／之後</h2>
+          <button class="btn small" data-add="pending">＋加一單</button>
+        </div>
+        <div id="listPending" class="list"><div class="item">
+      <div class="itemtop">
+        <div class="left">
+          <label class="check">
+            <input type="checkbox" class="done">
+            <span class="box"></span>
+          </label>
+          <input class="title" type="text" placeholder="例：Gelato Pique Cafe｜Airside 3/F / A3507 / C2502">
+          <div class="custPick">
+            <select class="custSelect" title="選擇常用客戶"><option value="">（選擇常用客戶）</option><option value="r3zt9sfs">test</option><option value="qysw34jc" selected="">林小姐</option><option value="ptn7tb94">AA</option><option value="qw01wk8g">A3507</option><option value="g9s5w804">A2801</option><option value="vtsao9rf">常悦李小姐</option><option value="red7l9ed">東浦</option><option value="43rrl3v9">C2502</option><option value="daj8swsa">D2208</option><option value="aqyk0skq">Gelato Pique Cafe</option><option value="70tay536">D3207</option><option value="zft3t489">華懋 Miki</option><option value="qr64uny1">六合街嘉時</option><option value="mwkwt9ev">松池</option><option value="q6a06ons">泰力</option></select>
+            <button class="btn tiny applyCust" type="button" title="套用客戶預設資料到此單">套用</button>
+          </div>
+
+        </div>
+        <div class="right">
+          <button class="tag red late" title="10點後／一定要留意">🔴</button>
+          <button class="tag yellow pendingTag" title="未定／之後">🟨</button>
+          <button class="tag gray cancel" title="取消">❌</button>
+          <button class="tag" title="刪除">🗑️</button>
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>地址</label>
+          <input class="addr" type="text" placeholder="地址（可留空）">
+        </div>
+        <div class="field">
+          <label>電話</label>
+          <input class="phone" type="text" placeholder="例如：97208585">
+        </div>
+        <div class="field">
+          <label>時間</label>
+          <input class="time" type="text" placeholder="例如：6-8 / 8:30pm / 10點後">
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>備註</label>
+          <input class="note" type="text" placeholder="例如：管理處｜入袋｜密碼｜要影相｜加化油｜運費+$50 ...">
+        </div>
+        <div class="field">
+          <label>金額</label>
+          <input class="amt" type="text" placeholder="$120 / $5/機">
+        </div>
+        <div class="field">
+          <label>付款</label>
+          <select class="pay">
+            <option value="">未填</option>
+            <option value="✔ paid">✔ paid</option>
+            <option value="✔ alipay">✔ alipay</option>
+            <option value="✔ fps">✔ fps</option>
+            <option value="✔ ed">✔ ed</option>
+          </select>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="metaBadge edited">✏️</span>
+        <span class="metaBadge updated show">🔄</span>
+      </div>
+    </div><div class="item">
+      <div class="itemtop">
+        <div class="left">
+          <label class="check">
+            <input type="checkbox" class="done">
+            <span class="box"></span>
+          </label>
+          <input class="title" type="text" placeholder="例：Gelato Pique Cafe｜Airside 3/F / A3507 / C2502">
+          <div class="custPick">
+            <select class="custSelect" title="選擇常用客戶"><option value="">（選擇常用客戶）</option><option value="r3zt9sfs">test</option><option value="qysw34jc">林小姐</option><option value="ptn7tb94" selected="">AA</option><option value="qw01wk8g">A3507</option><option value="g9s5w804">A2801</option><option value="vtsao9rf">常悦李小姐</option><option value="red7l9ed">東浦</option><option value="43rrl3v9">C2502</option><option value="daj8swsa">D2208</option><option value="aqyk0skq">Gelato Pique Cafe</option><option value="70tay536">D3207</option><option value="zft3t489">華懋 Miki</option><option value="qr64uny1">六合街嘉時</option><option value="mwkwt9ev">松池</option><option value="q6a06ons">泰力</option></select>
+            <button class="btn tiny applyCust" type="button" title="套用客戶預設資料到此單">套用</button>
+          </div>
+
+        </div>
+        <div class="right">
+          <button class="tag red late" title="10點後／一定要留意">🔴</button>
+          <button class="tag yellow pendingTag" title="未定／之後">🟨</button>
+          <button class="tag gray cancel active" title="取消">❌</button>
+          <button class="tag" title="刪除">🗑️</button>
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>地址</label>
+          <input class="addr" type="text" placeholder="地址（可留空）">
+        </div>
+        <div class="field">
+          <label>電話</label>
+          <input class="phone" type="text" placeholder="例如：97208585">
+        </div>
+        <div class="field">
+          <label>時間</label>
+          <input class="time" type="text" placeholder="例如：6-8 / 8:30pm / 10點後">
+        </div>
+      </div>
+      <div class="row compact">
+        <div class="field grow">
+          <label>備註</label>
+          <input class="note" type="text" placeholder="例如：管理處｜入袋｜密碼｜要影相｜加化油｜運費+$50 ...">
+        </div>
+        <div class="field">
+          <label>金額</label>
+          <input class="amt" type="text" placeholder="$120 / $5/機">
+        </div>
+        <div class="field">
+          <label>付款</label>
+          <select class="pay">
+            <option value="">未填</option>
+            <option value="✔ paid">✔ paid</option>
+            <option value="✔ alipay">✔ alipay</option>
+            <option value="✔ fps">✔ fps</option>
+            <option value="✔ ed">✔ ed</option>
+          </select>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="metaBadge edited">✏️</span>
+        <span class="metaBadge updated show">🔄</span>
+      </div>
+    </div></div>
+      </section>
+    </section>
+
+    
+    <section class="card" id="customersCard">
+      <div class="cardhead">
+        <h2>👥 常用客戶（固定地址/收費/備註）</h2>
+        <div class="muted">先建立常用客戶，以後加單只要選「客戶名」就會自動帶出地址、電話、備註、金額。</div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>客戶名（例如：松池 / Miki / Gelato）</label>
+          <input id="custName" type="text" placeholder="例：松池">
+        </div>
+        <div class="field grow">
+          <label>預設地址</label>
+          <input id="custAddr" type="text" placeholder="例：新蒲崗大有街3號 萬廸廣場1樓E1">
+        </div>
+        <div class="field">
+          <label>預設電話</label>
+          <input id="custPhone" type="text" placeholder="例：69173041">
+        </div>
+      </div>
+
+      <div class="row compact">
+        <div class="field grow">
+          <label>預設備註（例如：管理處｜入袋｜加化油｜密碼｜影相）</label>
+          <input id="custNote" type="text" placeholder="例：毛巾多油，要加化油/洗潔精去油，每機$5">
+        </div>
+        <div class="field">
+          <label>預設金額</label>
+          <input id="custAmt" type="text" placeholder="例：$120 / $5/機">
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button id="btnAddCust" class="btn">＋新增客戶</button>
+        </div>
+      </div>
+
+      <div class="custListWrap">
+        <div class="muted">已建立客戶：</div>
+        <div id="custList" class="custList"><div class="custRow">
+      <div class="name">test</div>
+      <div class="mini">test</div>
+      <div class="mini">test</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="r3zt9sfs">編輯</button>
+      <button class="btn danger small" data-del="r3zt9sfs">刪除</button>
+    </div><div class="custRow">
+      <div class="name">林小姐</div>
+      <div class="mini">67300510</div>
+      <div class="mini">啟德沐泰街9號嘉峯匯2B座3樓A室</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="qysw34jc">編輯</button>
+      <button class="btn danger small" data-del="qysw34jc">刪除</button>
+    </div><div class="custRow">
+      <div class="name">AA</div>
+      <div class="mini">90758825</div>
+      <div class="mini">啟德一號二期十座一樓</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="ptn7tb94">編輯</button>
+      <button class="btn danger small" data-del="ptn7tb94">刪除</button>
+    </div><div class="custRow">
+      <div class="name">A3507</div>
+      <div class="mini"></div>
+      <div class="mini">星河</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="qw01wk8g">編輯</button>
+      <button class="btn danger small" data-del="qw01wk8g">刪除</button>
+    </div><div class="custRow">
+      <div class="name">A2801</div>
+      <div class="mini"></div>
+      <div class="mini">星河</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="g9s5w804">編輯</button>
+      <button class="btn danger small" data-del="g9s5w804">刪除</button>
+    </div><div class="custRow">
+      <div class="name">常悦李小姐</div>
+      <div class="mini">9452 4758</div>
+      <div class="mini">九龍灣常悦道20號環球工商大廈1106F室</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="vtsao9rf">編輯</button>
+      <button class="btn danger small" data-del="vtsao9rf">刪除</button>
+    </div><div class="custRow">
+      <div class="name">東浦</div>
+      <div class="mini"></div>
+      <div class="mini">七寶街東蒲 217室 保安位</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="red7l9ed">編輯</button>
+      <button class="btn danger small" data-del="red7l9ed">刪除</button>
+    </div><div class="custRow">
+      <div class="name">C2502</div>
+      <div class="mini"></div>
+      <div class="mini">星河</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="43rrl3v9">編輯</button>
+      <button class="btn danger small" data-del="43rrl3v9">刪除</button>
+    </div><div class="custRow">
+      <div class="name">D2208</div>
+      <div class="mini"></div>
+      <div class="mini">星河</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="daj8swsa">編輯</button>
+      <button class="btn danger small" data-del="daj8swsa">刪除</button>
+    </div><div class="custRow">
+      <div class="name">Gelato Pique Cafe</div>
+      <div class="mini">97208585</div>
+      <div class="mini">3/F Airside</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="aqyk0skq">編輯</button>
+      <button class="btn danger small" data-del="aqyk0skq">刪除</button>
+    </div><div class="custRow">
+      <div class="name">D3207</div>
+      <div class="mini"></div>
+      <div class="mini">星河</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="70tay536">編輯</button>
+      <button class="btn danger small" data-del="70tay536">刪除</button>
+    </div><div class="custRow">
+      <div class="name">華懋 Miki</div>
+      <div class="mini">6774 4342,</div>
+      <div class="mini">新蒲崗五芳街5至7號華懋工業大廈9樓c3室</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="zft3t489">編輯</button>
+      <button class="btn danger small" data-del="zft3t489">刪除</button>
+    </div><div class="custRow">
+      <div class="name">六合街嘉時</div>
+      <div class="mini">97135849</div>
+      <div class="mini">六合街嘉時工業大廈6樓B2 A室</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="qr64uny1">編輯</button>
+      <button class="btn danger small" data-del="qr64uny1">刪除</button>
+    </div><div class="custRow">
+      <div class="name">松池</div>
+      <div class="mini"></div>
+      <div class="mini">香港九龍新蒲崗大有街3號萬廸廣場1樓E1號舖</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="mwkwt9ev">編輯</button>
+      <button class="btn danger small" data-del="mwkwt9ev">刪除</button>
+    </div><div class="custRow">
+      <div class="name">泰力</div>
+      <div class="mini">65845165</div>
+      <div class="mini">大有街32號泰力工業中心6樓12室</div>
+      <div class="spacer"></div>
+      <button class="btn ghost small" data-edit="q6a06ons">編輯</button>
+      <button class="btn danger small" data-del="q6a06ons">刪除</button>
+    </div></div>
+      </div>
+    </section>
+
+<section class="card">
+      <div class="cardhead">
+        <h2>🕒 更新紀錄（自動）</h2>
+        <div class="muted">新增／修改／狀態變更會自動記錄，方便你 6 點前追蹤。</div>
+      </div>
+      <div id="changelog" class="changelog"><div class="logline">23:44  🔄 更新：test（客戶）</div><div class="logline">23:44  🔄 更新：test（客戶）</div><div class="logline">23:35  🔄 產生最終單文字</div><div class="logline">23:31  🔄 套用客戶：test</div><div class="logline">23:31  🔄 更新：（未命名）（客戶）</div><div class="logline">23:31  🔄 新增客戶：test</div><div class="logline">23:31  🔄 更新：（未命名）（客戶）</div><div class="logline">23:30  🔄 更新：（未命名）（客戶）</div><div class="logline">23:30  🔄 新增：送 一單</div><div class="logline">23:26  🔄 已 Copy 到剪貼簿</div><div class="logline">23:26  🔄 產生最終單文字</div><div class="logline">23:26  🔄 套用客戶：林小姐</div><div class="logline">23:26  🔄 更新：（未命名）（客戶）</div><div class="logline">23:26  🔄 新增：未定 一單</div><div class="logline">23:26  🔄 套用客戶：AA</div><div class="logline">23:26  🔄 更新：（未命名）（客戶）</div><div class="logline">23:26  🔄 新增客戶：林小姐</div><div class="logline">23:25  🔄 新增客戶：AA</div><div class="logline">23:24  🔄 刪除客戶：test 1</div><div class="logline">23:24  🔄 已 Copy 到剪貼簿</div><div class="logline">23:24  🔄 產生最終單文字</div><div class="logline">23:23  🔄 產生最終單文字</div><div class="logline">23:23  🔄 產生最終單文字</div><div class="logline">23:23  🔄 更新：（未命名）（cancel）</div><div class="logline">23:23  🔄 新增：未定 一單</div><div class="logline">23:23  🔄 產生最終單文字</div><div class="logline">23:23  🔄 更新：（未命名）（客戶）</div><div class="logline">23:23  🔄 新增：收 一單</div><div class="logline">23:23  🔄 套用客戶：Gelato Pique Cafe</div><div class="logline">23:23  🔄 更新：（未命名）（客戶）</div><div class="logline">23:23  🔄 新增：送 一單</div><div class="logline">23:23  🔄 刪除：送 （未命名）</div><div class="logline">23:23  🔄 刪除：送 （未命名）</div><div class="logline">23:23  🔄 刪除：送 （未命名）</div><div class="logline">23:23  🔄 刪除：送 airside</div><div class="logline">23:02  🔄 新增客戶：test 1</div><div class="logline">23:02  🔄 刪除客戶：test</div><div class="logline">22:42  🔄 新增客戶：test</div><div class="logline">16:38  🔄 新增客戶：A3507</div><div class="logline">16:38  🔄 刪除客戶：嘉時工業大廈</div><div class="logline">16:38  🔄 新增客戶：嘉時工業大廈</div><div class="logline">16:37  🔄 新增客戶：A2801</div><div class="logline">16:37  🔄 新增客戶：常悦李小姐</div><div class="logline">16:36  🔄 新增客戶：東浦</div><div class="logline">16:36  🔄 新增客戶：C2502</div><div class="logline">16:36  🔄 新增客戶：D2208</div><div class="logline">16:36  🔄 新增客戶：Gelato Pique Cafe</div><div class="logline">16:35  🔄 新增客戶：D3207</div><div class="logline">16:35  🔄 新增客戶：華懋 Miki</div><div class="logline">16:34  🔄 新增客戶：六合街嘉時</div><div class="logline">16:22  🔄 已 Copy 到剪貼簿</div><div class="logline">16:21  🔄 已 Copy 到剪貼簿</div><div class="logline">16:21  🔄 產生最終單文字</div><div class="logline">16:21  ✏️ 改過：airside（addr）</div><div class="logline">16:21  ✏️ 改過：airsid（addr）</div><div class="logline">16:21  ✏️ 改過：airsi（addr）</div><div class="logline">16:21  ✏️ 改過：airs（addr）</div><div class="logline">16:21  ✏️ 改過：air（addr）</div><div class="logline">16:21  ✏️ 改過：ai（addr）</div><div class="logline">16:21  ✏️ 改過：a（addr）</div><div class="logline">16:21  ✏️ 改過：（未命名）（addr）</div><div class="logline">16:21  ✏️ 改過：火（addr）</div><div class="logline">16:21  ✏️ 改過：火木（addr）</div><div class="logline">16:21  ✏️ 改過：火木火（addr）</div><div class="logline">16:21  ✏️ 改過：火木火木（addr）</div><div class="logline">16:21  ✏️ 改過：火木火（addr）</div><div class="logline">16:21  ✏️ 改過：火木（addr）</div><div class="logline">16:21  ✏️ 改過：火（addr）</div><div class="logline">16:21  🔄 更新：（未命名）（done）</div><div class="logline">16:21  🔄 新增：送 一單</div><div class="logline">16:21  🔄 更新：（未命名）（done）</div><div class="logline">16:21  🔄 更新：（未命名）（客戶）</div><div class="logline">16:21  🔄 新增：送 一單</div><div class="logline">16:21  🔄 更新：星期 星期五</div><div class="logline">16:21  🔄 更新：日期 2026-02-20</div><div class="logline">16:21  🔄 更新：日期 2026-02-19</div><div class="logline">16:21  🔄 產生最終單文字</div><div class="logline">16:21  🔄 新增客戶：松池</div><div class="logline">16:19  🔄 新增客戶：泰力</div><div class="logline">16:10  🔄 新增：送 一單</div><div class="logline">16:10  🔄 新增：送 一單</div><div class="logline">16:01  🔄 產生最終單文字</div></div>
+      <div class="row end">
+        <button id="btnClearLog" class="btn ghost small">清空更新紀錄</button>
+        <button id="btnResetDay" class="btn danger small">重置今日單</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="cardhead">
+        <h2>🧾 最終單輸出（可直接 Copy 貼去 WhatsApp delivery group）</h2>
+        <div class="muted">按「📦 產生最終單」會自動生成文字；再按 Copy。</div>
+      </div>
+      <div class="row end">
+        <button id="btnCopy" class="btn ghost">📋 Copy</button>
+      </div>
+      <textarea id="exportText" class="export" placeholder="（產生後會出現喺呢度）"></textarea>
+    </section>
+
+    <footer class="foot">
+      <div class="muted">資料只儲存在你手機/瀏覽器本地（LocalStorage），唔會上傳到雲端。</div>
+    </footer>
+  </main>
+
+  <template id="itemTemplate"></template>
+
+  <script type="module" src="./Whale Delivery Log_files/firebase-init.js.下載"></script>
+  <script src="./Whale Delivery Log_files/app.js.下載"></script>
+
+
+</body></html>

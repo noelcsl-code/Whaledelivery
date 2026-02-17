@@ -307,7 +307,10 @@ function bindCustomerAdd(){
     // clear inputs
     $("#custName").value=""; $("#custAddr").value=""; $("#custPhone").value="";
     $("#custNote").value=""; $("#custAmt").value="";
-    render(); save();
+   render(); 
+  save();
+   scheduleCloudPush();
+
   });
 }
 

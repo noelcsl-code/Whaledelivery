@@ -630,7 +630,7 @@ function initCloudSync(){
 async function cloudPull(){
   const fb = await getCloud();
   if(!fb || !__cloudUid){ alert("雲端未就緒，請稍後再試"); return; }
-  const ref = fb.doc(fb.db, "users", __cloudUid);
+  const ref = fb.doc(fb.db, "shared", "whalev2");
   const snap = await fb.getDoc(ref);
   if(!snap.exists()){
     alert("雲端暫時未有資料（第一次請按『上雲』）");
@@ -665,7 +665,7 @@ async function cloudPush(){
     if(!ok) return;
   }
 
-  const ref = fb.doc(fb.db, "users", __cloudUid);
+  const ref = fb.doc(fb.db, "shared", "whalev2");
   await fb.setDoc(ref, {
     state: state,
     updatedAt: fb.serverTimestamp(),
